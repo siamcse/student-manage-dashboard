@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
 import { format } from 'date-fns';
+import React, { useEffect, useState } from 'react';
 
-const AddStudents = () => {
+const ViewPage = () => {
     const loadDate = format(new Date(), "dd LLL yyyy HH:mm");
     const [date, setDate] = useState(loadDate)
     useEffect(() => {
@@ -10,46 +10,15 @@ const AddStudents = () => {
             clearInterval(currentDate);
         };
     }, []);
-
-    const handleAddStudent = (e) => {
-        e.preventDefault();
-        const form = e.target;
-        const fName = form.fname.value;
-        const mName = form.mname.value;
-        const lName = form.lname.value;
-        const presentClass = form.class.value;
-        const division = form.division.value;
-        const roll = Number(form.roll.value);
-        const address1 = form.address1.value;
-        const address2 = form.address2.value;
-        const landmark = form.landmark.value;
-        const city = form.city.value;
-        const pincode = Number(form.pincode.value);
-
-        const studentData = {
-            fName,
-            mName,
-            lName,
-            presentClass,
-            division,
-            roll,
-            address1,
-            address2,
-            landmark,
-            city,
-            pincode
-        }
-        console.log(studentData);
-    }
     return (
         <div className='md:mr-5 mx-3'>
             <div className='flex justify-between'>
-                <p>Add Students</p>
+                <p>View Students</p>
                 <p>{date}</p>
             </div>
-            <form onSubmit={handleAddStudent} className='my-8'>
+            <div className='my-8'>
                 <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
-                    <input type="text" name='fname' className='py-4 px-4 rounded-md focus:outline-none shadow-[0_0_3px_rgba(0,0,0,0.2)]' placeholder='First Name' required />
+                    <input type="text" name='fname' value='Abu Siam' readOnly className='py-4 px-4 rounded-md focus:outline-none shadow-[0_0_3px_rgba(0,0,0,0.2)]' placeholder='First Name' required />
                     <input type="text" name='mname' className='py-4 px-4 rounded-md focus:outline-none shadow-[0_0_3px_rgba(0,0,0,0.2)]' placeholder='Middle Name' />
                     <input type="text" name='lname' className='py-4 px-4 rounded-md focus:outline-none shadow-[0_0_3px_rgba(0,0,0,0.2)]' placeholder='Last Name' required />
                     <select defaultValue="Select Class"
@@ -103,10 +72,10 @@ const AddStudents = () => {
                         placeholder='Pincode'
                     />
                 </div>
-                <input type='submit' className='btn text-white px-6 md:px-24 py-4 bg-primary mt-8 rounded-md hover:bg-red-600' value="Add Student" />
-            </form>
+            </div>
+            
         </div>
     );
 };
 
-export default AddStudents;
+export default ViewPage;
