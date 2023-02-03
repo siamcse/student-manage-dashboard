@@ -1,7 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { format } from 'date-fns';
+import { AuthContext } from '../../context/AuthProvider';
+import { toast } from 'react-hot-toast';
 
 const AddStudents = () => {
+    const {user} = useContext(AuthContext);
+
     const loadDate = format(new Date(), "dd LLL yyyy HH:mm");
     const [date, setDate] = useState(loadDate)
     useEffect(() => {
@@ -37,9 +41,27 @@ const AddStudents = () => {
             address2,
             landmark,
             city,
-            pincode
+            pincode,
+            userEmail:user?.email,
+            userName: user?.displayName
         }
         console.log(studentData);
+
+        fetch('http://localhost:5000/students', {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify(studentData)
+        })
+            .then(res => res.json())
+            .then(data => {
+                console.log(data);
+                if (data.acknowledged) {
+                    toast.success('Student added successfully.');
+                    e.target.reset();
+                }
+            })
     }
     return (
         <div className='md:mr-5 mx-3'>
