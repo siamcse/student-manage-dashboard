@@ -22,15 +22,17 @@ export const router = createBrowserRouter([
                 element: <PrivateRoutes><ManageStudents /></PrivateRoutes>
             },
             {
-                path: '/view',
-                element: <PrivateRoutes><ViewPage /></PrivateRoutes>
+                path: '/view/:id',
+                element: <PrivateRoutes><ViewPage /></PrivateRoutes>,
+                loader: ({ params }) => fetch(`https://student-manage-server-siamcse.vercel.app/students/${params.id}`)
             },
             {
-                path: '/edit',
-                element: <PrivateRoutes><EditPage /></PrivateRoutes>
+                path: '/edit/:id',
+                element: <PrivateRoutes><EditPage /></PrivateRoutes>,
+                loader: ({ params }) => fetch(`https://student-manage-server-siamcse.vercel.app/students/${params.id}`)
             },
             {
-                path: '/login',
+                path: '/',
                 element: <Login />
             },
             {

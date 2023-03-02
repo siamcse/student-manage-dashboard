@@ -4,7 +4,7 @@ import { AuthContext } from '../../context/AuthProvider';
 import { toast } from 'react-hot-toast';
 
 const AddStudents = () => {
-    const {user} = useContext(AuthContext);
+    const { user } = useContext(AuthContext);
 
     const loadDate = format(new Date(), "dd LLL yyyy HH:mm");
     const [date, setDate] = useState(loadDate)
@@ -42,12 +42,12 @@ const AddStudents = () => {
             landmark,
             city,
             pincode,
-            userEmail:user?.email,
+            userEmail: user?.email,
             userName: user?.displayName
         }
         console.log(studentData);
 
-        fetch('http://localhost:5000/students', {
+        fetch('https://student-manage-server-siamcse.vercel.app/students', {
             method: 'POST',
             headers: {
                 'content-type': 'application/json'

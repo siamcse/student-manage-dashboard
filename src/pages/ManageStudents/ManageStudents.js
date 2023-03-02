@@ -6,9 +6,12 @@ import { format } from 'date-fns';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { AuthContext } from '../../context/AuthProvider';
+import { toast } from 'react-hot-toast';
+import ConfirmationModal from '../shared/ConfirmationModal/ConfirmationModal';
 
 const ManageStudents = () => {
     const { user } = useContext(AuthContext);
+    const [deletingStudent, setDeletingStudent] = useState(null);
 
     //current time update
     const loadDate = format(new Date(), "dd LLL yyyy HH:mm");
@@ -24,12 +27,26 @@ const ManageStudents = () => {
     const { data: students = [], refetch } = useQuery({
         queryKey: ['products', user?.email],
         queryFn: async () => {
-            const res = await fetch(`http://localhost:5000/students?email=${user?.email}`);
+            const res = await fetch(`https://student-manage-server-siamcse.vercel.app/students?email=${user?.email}`);
             const data = await res.json();
             return data;
         }
     });
-    console.log(students);
+    //delete student
+    const handleDeleteStudent = student => {
+        console.log(student);
+        fetch(`https://student-manage-server-siamcse.vercel.app/students/${student._id}`, {
+            method: 'DELETE'
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.acknowledged) {
+                    toast.success('Student Deleted successfull');
+                    refetch();
+                }
+            })
+    }
+
     return (
         <div className='md:mr-5 mx-3'>
             <div className='flex justify-between'>
@@ -40,12 +57,14 @@ const ManageStudents = () => {
                 <div className="container">
                     <table className="w-full flex flex-row flex-no-wrap sm:bg-white rounded-md overflow-hidden sm:shadow-lg">
                         <thead className="text-white">
-                            <tr className="bg-primary flex flex-col flex-nowrap sm:table-row rounded-l-lg sm:rounded-none mb-2 sm:mb-0">
-                                <th className="p-3 text-left">Name</th>
-                                <th className="p-3 text-left">Class</th>
-                                <th className="p-3 text-left">Roll No.</th>
-                                <th className="p-3 text-left">View / Edit / Delete</th>
-                            </tr>
+                            {
+                                students.map(student => <tr key={student._id} className="bg-primary flex flex-col flex-nowrap sm:table-row rounded-l-lg sm:rounded-none mb-2 sm:mb-0">
+                                    <th className="p-3 text-left">Name</th>
+                                    <th className="p-3 text-left">Class</th>
+                                    <th className="p-3 text-left">Roll No.</th>
+                                    <th className="p-3 text-left">View / Edit / Delete</th>
+                                </tr>)
+                            }
                         </thead>
                         <tbody className="flex-1 sm:flex-none">
                             {
@@ -56,9 +75,12 @@ const ManageStudents = () => {
                                     <td className="border-grey-light border hover:bg-gray-100 p-3">{student.presentClass}-{student.division}</td>
                                     <td className="border-grey-light border hover:bg-gray-100 p-3">{student.roll}</td>
                                     <td className="border-grey-light border hover:bg-gray-100 p-3 flex gap-8 text-primary">
-                                        <Link to='/view'><FiEye className='w-6 h-6' /></Link>
-                                        <Link to='/edit'><BiEditAlt className='w-6 h-6' /></Link>
-                                        <Link to=''><RiDeleteBin6Line className='w-6 h-6' /></Link>
+                                        <Link to={`/view/${student._id}`}><FiEye className='w-6 h-6' /></Link>
+                                        <Link to={`/edit/${student._id}`}><BiEditAlt className='w-6 h-6' /></Link>
+                                        <label htmlFor="popup-modal" className="cursor-pointer"
+                                            onClick={() => setDeletingStudent(student)}>
+                                            <RiDeleteBin6Line className='w-6 h-6' />
+                                        </label>
                                     </td>
 
                                     {/* <td className="border-grey-light border hover:bg-gray-100 p-3 text-red-400 hover:text-red-600 hover:font-medium cursor-pointer"><label htmlFor="popup-modal" className="cursor-pointer">
@@ -70,6 +92,16 @@ const ManageStudents = () => {
                     </table>
                 </div>
             </div>
+            {
+                deletingStudent && <ConfirmationModal
+                    title={'Are You sure to delete?'}
+                    message={`You are deleting student: ${deletingStudent.fName} ${deletingStudent.lName}`}
+                    successModal={handleDeleteStudent}
+                    modalData={deletingStudent}
+                    closeModal={setDeletingStudent}
+                    action={'Delete'}
+                ></ConfirmationModal>
+            }
         </div>
     );
 };
